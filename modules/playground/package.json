@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "kuromoji": "^0.1.2",
+    "lodash": "^4.17.10",
+    "svm": "^0.1.1",
+    "word2vec": "^1.1.2"
+  }
+}
