@@ -1,2 +1,9 @@
 *.log
+.envrc
+.vscode
 node_modules
+.DS_Store
+
+**/dist/*
+!**/dist/.keep
+bundle.js
