@@ -1,14 +1,17 @@
 const path = require('path');
 const kuromoji = require('kuromoji');
 
-const builder = kuromoji.builder({
-  dicPath: path.resolve(require.resolve('kuromoji'), '..', '..', 'dict'),
-});
+const builder = kuromoji.builder({ dicPath: path.resolve('dict') });
 
 exports.handler = (event, context) => {
   builder.build((err, tokenizer) => {
-    const token = tokenizer.tokenize('頑張っていこうぜ');
-    console.log(token);
-    context.succeed(JSON.stringify(token));
+    if (err) {
+      console.error(err);
+      context.fail(err);
+    } else {
+      const token = tokenizer.tokenize('すもももももももものうち');
+      console.log(token);
+      context.succeed(token);
+    }
   });
 };
