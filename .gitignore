@@ -6,4 +6,7 @@ node_modules
 
 **/dist/*
 !**/dist/.keep
+!**/dist/lambda
+**/dist/lambda/*
+!**/dist/lambda/.keep
 bundle.js
