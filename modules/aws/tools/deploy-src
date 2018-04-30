@@ -1,0 +1,7 @@
+#!/bin/sh
+
+yarn webpack --mode development
+
+zip -r9 dist/bundle.zip bundle.js node_modules/kuromoji/dict
+
+aws s3 cp dist/ s3://$BUCKET_NAME/lambda/ --recursive --exclude=.keep --exclude=.DS_Store

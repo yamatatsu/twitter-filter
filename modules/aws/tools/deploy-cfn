@@ -1,0 +1,5 @@
+#!/bin/sh
+
+aws cloudformation package --template-file master.yaml --output-template-file dist/output.yaml --s3-bucket $CFN_STACK_NAME
+
+aws cloudformation deploy --template-file dist/output.yaml --stack-name $CFN_STACK_NAME --capabilities CAPABILITY_IAM --parameter-overrides S3BucketName=$CFN_STACK_NAME
