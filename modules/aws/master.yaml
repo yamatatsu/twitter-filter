@@ -26,10 +26,10 @@ Resources:
   MyLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      Code:
-        S3Bucket: !Ref S3BucketName
-        S3Key: lambda/bundle.zip
+      Code: ./dist/lambda
       Description: decode base64 function
       Handler: bundle.handler
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs8.10
+      MemorySize: 512
+      Timeout: 10
