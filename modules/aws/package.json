@@ -5,13 +5,12 @@
   "license": "MIT",
   "scripts": {
     "deploy": "./tools/deploy",
-    "stack:delete":
-      "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
-    "stack:describe":
-      "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
+    "stack:delete": "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
+    "stack:describe": "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
   },
   "dependencies": {
-    "kuromoji": "^0.1.2"
+    "kuromoji": "^0.1.2",
+    "twitter": "^1.7.1"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.2",

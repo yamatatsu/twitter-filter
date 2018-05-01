@@ -21,15 +21,23 @@ Resources:
             Principal:
               Service: [ lambda.amazonaws.com ]
       Path: /
-      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/PowerUserAccess" ]
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 
   MyLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
       Code: ./dist/lambda
-      Description: decode base64 function
       Handler: bundle.handler
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs8.10
       MemorySize: 512
       Timeout: 10
+
+  LambdaFetchTwitterTimeline:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: ./dist/lambda
+      Handler: bundle.fetchTwitterTimeline
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: nodejs8.10
