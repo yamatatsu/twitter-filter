@@ -9,6 +9,7 @@
     "stack:describe": "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
   },
   "dependencies": {
+    "aws-sdk": "^2.230.1",
     "kuromoji": "^0.1.2",
     "twitter": "^1.7.1"
   },
