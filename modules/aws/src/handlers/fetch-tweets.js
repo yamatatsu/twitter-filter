@@ -14,12 +14,14 @@ function fetchTweets(event, context) {
         since_id: lastFetchedTweetId,
       })
     )
-    .then(tweets =>
-      Promise.all([
+    .then(tweets => {
+      console.log("fetched_tweets: %o", tweets);
+
+      return Promise.all([
         db.putToKVS(LAST_FETCHED_TWEET_ID, last(tweets).id),
         ...chunk(tweets, 25).map(db.batchPutToRawTweets),
-      ])
-    )
+      ]);
+    })
     .then(data => {
       context.succeed(data);
     })
