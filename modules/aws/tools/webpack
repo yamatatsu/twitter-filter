@@ -4,8 +4,3 @@ set -eux
 yarn webpack --mode development
 # kuromojiを使い始めるときまで封印
 # cp -rf node_modules/kuromoji/dict dist/lambda/dict
-
-aws cloudformation package \
-  --template-file master.yaml \
-  --output-template-file dist/output.yaml \
-  --s3-bucket $CFN_STACK_NAME

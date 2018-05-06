@@ -4,9 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "deploy": "npm-run-all deploy:package deploy:deploy",
-    "deploy:package": "./tools/package",
-    "deploy:deploy": "./tools/deploy",
+    "deploy": "npm-run-all deploy:webpack deploy:aws",
+    "deploy:webpack": "./tools/webpack",
+    "deploy:aws": "./tools/aws",
     "stack:delete":
       "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
     "stack:describe":
