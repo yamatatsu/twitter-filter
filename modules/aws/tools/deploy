@@ -1,9 +1,12 @@
 #!/bin/sh
 set -eux
 
-yarn webpack --mode development
-# kuromojiを使い始めるときまで封印
-# cp -rf node_modules/kuromoji/dict dist/lambda/dict
-
-aws cloudformation package --template-file master.yaml --output-template-file dist/output.yaml --s3-bucket $CFN_STACK_NAME
-aws cloudformation deploy --template-file dist/output.yaml --stack-name $CFN_STACK_NAME --capabilities CAPABILITY_IAM --parameter-overrides S3BucketName=$CFN_STACK_NAME
+aws cloudformation deploy \
+  --template-file dist/output.yaml \
+  --stack-name $CFN_STACK_NAME \
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides \
+    TwitterConsumerKey=$TWITTER_CONSUMER_KEY \
+    TwitterConsumerSecret=$TWITTER_CONSUMER_SECRET \
+    TwitterAccessToken=$TWITTER_ACCESS_TOKEN \
+    TwitterAccessTokenSecret=$TWITTER_ACCESS_TOKEN_SECRET

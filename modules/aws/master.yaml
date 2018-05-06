@@ -5,8 +5,18 @@ Description: Lambda sample environment template
 
 Parameters:
 
-  S3BucketName:
+  TwitterConsumerKey:
     Type: String
+    NoEcho: true
+  TwitterConsumerSecret:
+    Type: String
+    NoEcho: true
+  TwitterAccessToken:
+    Type: String
+    NoEcho: true
+  TwitterAccessTokenSecret:
+    Type: String
+    NoEcho: true
 
 
 Resources:
@@ -24,20 +34,52 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 
-  MyLambdaFunction:
+  # ##############################
+  # lambda
+
+  LambdaFetchTweets:
     Type: AWS::Lambda::Function
     Properties:
       Code: ./dist/lambda
-      Handler: bundle.handler
+      Handler: bundle.fetchTweets
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs8.10
+      Environment:
+        Variables:
+          TWITTER_CONSUMER_KEY: !Ref TwitterConsumerKey
+          TWITTER_CONSUMER_SECRET: !Ref TwitterConsumerSecret
+          TWITTER_ACCESS_TOKEN: !Ref TwitterAccessToken
+          TWITTER_ACCESS_TOKEN_SECRET: !Ref TwitterAccessTokenSecret
       MemorySize: 512
       Timeout: 10
 
-  LambdaFetchTwitterTimeline:
-    Type: AWS::Lambda::Function
+  # ##############################
+  # dynamo
+
+  DDBTRaws:
+    Type: 'AWS::DynamoDB::Table'
     Properties:
-      Code: ./dist/lambda
-      Handler: bundle.fetchTwitterTimeline
-      Role: !GetAtt LambdaRole.Arn
-      Runtime: nodejs8.10
+      TableName: TwitterFilter_RawTweets
+      AttributeDefinitions:
+        - AttributeName: TweetId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: TweetId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  DDBKVS:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: TwitterFilter_KVS
+      AttributeDefinitions:
+        - AttributeName: Key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1

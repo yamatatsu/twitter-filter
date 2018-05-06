@@ -4,13 +4,18 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "deploy": "./tools/deploy",
-    "stack:delete": "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
-    "stack:describe": "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
+    "deploy": "npm-run-all deploy:package deploy:deploy",
+    "deploy:package": "./tools/package",
+    "deploy:deploy": "./tools/deploy",
+    "stack:delete":
+      "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
+    "stack:describe":
+      "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
   },
   "dependencies": {
     "aws-sdk": "^2.230.1",
     "kuromoji": "^0.1.2",
+    "lodash": "^4.17.10",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
