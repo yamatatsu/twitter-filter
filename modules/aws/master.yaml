@@ -35,27 +35,26 @@ Resources:
               Service: [ lambda.amazonaws.com ]
       Path: /
       ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
         - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 
   # ##############################
   # lambda
 
-  # EventRule_Scheduled:
-  #   Type: AWS::Events::Rule
-  #   Properties:
-  #     Description: ScheduledRule
-  #     ScheduleExpression: 'cron(0/15 * * * ? *)'
-  #     State: ENABLED
-  #     Targets:
-  #     - Arn: !GetAtt 'LambdaFunction.Arn'
-  #       Id: TargetFunctionV1
-  # LambdaPermission_ForEventsToInvokeLambda:
-  #   Type: AWS::Lambda::Permission
-  #   Properties:
-  #     FunctionName: !Ref 'LambdaFunction'
-  #     Action: lambda:InvokeFunction
-  #     Principal: events.amazonaws.com
-  #     SourceArn: !GetAtt 'ScheduledRule.Arn'
+  EventRuleForFetchTweets:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: 'cron(0/15 * * * ? *)'
+      Targets:
+        - Arn: !GetAtt 'LambdaFetchTweets.Arn'
+          Id: !Ref 'LambdaFetchTweets'
+  LambdaPermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref 'LambdaFetchTweets'
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt 'EventRuleForFetchTweets.Arn'
 
   LambdaFetchTweets:
     Type: AWS::Lambda::Function
