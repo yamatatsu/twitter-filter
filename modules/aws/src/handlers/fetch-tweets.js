@@ -15,7 +15,7 @@ function fetchTweets(event, context) {
       })
     )
     .then(tweets => {
-      console.log("fetched_tweets: %o", tweets);
+      console.info("fetched_tweets: %o", tweets);
 
       return Promise.all([
         db.putToKVS(LAST_FETCHED_TWEET_ID, last(tweets).id),
