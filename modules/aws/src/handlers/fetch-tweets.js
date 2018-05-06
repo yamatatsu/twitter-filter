@@ -18,7 +18,7 @@ function fetchTweets(event, context) {
       console.info("fetched_tweets: %o", tweets);
 
       return Promise.all([
-        db.putToKVS(LAST_FETCHED_TWEET_ID, last(tweets).id),
+        db.putToKVS(LAST_FETCHED_TWEET_ID, last(tweets).id_str),
         ...chunk(tweets, 25).map(db.batchPutToRawTweets),
       ]);
     })
