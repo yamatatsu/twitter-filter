@@ -1,3 +1,6 @@
 extends:
   - airbnb
   - plugin:prettier/recommended
+rules:
+  react/jsx-filename-extension: 0 # jsでjsx使ってもいいじゃない
+  no-use-before-define: 0 # 巻き上げとか許容したい
