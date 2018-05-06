@@ -11,7 +11,7 @@ function fetchTweets(event, context) {
     .then(lastFetchedTweetId =>
       twitter.fetchHomeTimeline({
         count: 200, // API仕様の最大値
-        since_id: lastFetchedTweetId || 1, // 一番古いツイートから取ってくる。それでもAPIでは過去3,200件分しか取ってこれないらしい。0は指定できない。
+        since_id: lastFetchedTweetId,
       })
     )
     .then(tweets =>

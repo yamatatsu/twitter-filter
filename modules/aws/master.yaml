@@ -21,6 +21,9 @@ Parameters:
 
 Resources:
 
+  # ##############################
+  # IAM
+
   LambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -36,6 +39,23 @@ Resources:
 
   # ##############################
   # lambda
+
+  # EventRule_Scheduled:
+  #   Type: AWS::Events::Rule
+  #   Properties:
+  #     Description: ScheduledRule
+  #     ScheduleExpression: 'cron(0/15 * * * ? *)'
+  #     State: ENABLED
+  #     Targets:
+  #     - Arn: !GetAtt 'LambdaFunction.Arn'
+  #       Id: TargetFunctionV1
+  # LambdaPermission_ForEventsToInvokeLambda:
+  #   Type: AWS::Lambda::Permission
+  #   Properties:
+  #     FunctionName: !Ref 'LambdaFunction'
+  #     Action: lambda:InvokeFunction
+  #     Principal: events.amazonaws.com
+  #     SourceArn: !GetAtt 'ScheduledRule.Arn'
 
   LambdaFetchTweets:
     Type: AWS::Lambda::Function
