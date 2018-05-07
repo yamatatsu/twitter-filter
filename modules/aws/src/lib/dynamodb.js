@@ -1,10 +1,10 @@
 const util = require("util");
 const AWS = require("aws-sdk");
 
-const client = createPromisedClient();
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 function batchPutToRawTweets(tweets) {
-  return client("batchWrite", {
+  const params = {
     RequestItems: {
       TwitterFilter_RawTweets: tweets.map(t => ({
         PutRequest: {
@@ -19,21 +19,32 @@ function batchPutToRawTweets(tweets) {
         },
       })),
     },
-  }).catch(handleErr("dynamodb batchPutToRawTweets. %o", { tweets }));
+  };
+  return documentClient
+    .batchWrite(params)
+    .promise()
+    .catch(handleErr("dynamodb batchPutToRawTweets. %o", { tweets }));
 }
 
 function putToKVS(key, value) {
-  return client("put", {
+  const params = {
     TableName: "TwitterFilter_KVS",
     Item: { Key: key, Value: value },
-  }).catch(handleErr("dynamodb putToKVS. %o", { key, value }));
+  };
+  return documentClient
+    .put(params)
+    .promise()
+    .catch(handleErr("dynamodb putToKVS. %o", { key, value }));
 }
 
 function getValueFromKVS(key) {
-  return client("get", {
+  const params = {
     TableName: "TwitterFilter_KVS",
     Key: { Key: key },
-  })
+  };
+  return documentClient
+    .get(params)
+    .promise()
     .then(data => data.value)
     .catch(handleErr("dynamodb getValueFromKVS. %o", { key }));
 }
@@ -42,18 +53,6 @@ module.exports = { batchPutToRawTweets, putToKVS, getValueFromKVS };
 
 // /////////
 // private
-
-function createPromisedClient() {
-  const documentClient = new AWS.DynamoDB.DocumentClient();
-
-  return (func, params) =>
-    new Promise((resolve, reject) => {
-      documentClient[func](
-        params,
-        (err, data) => (err ? reject(err) : resolve(data))
-      );
-    });
-}
 
 function handleErr(message, obj) {
   return err =>
