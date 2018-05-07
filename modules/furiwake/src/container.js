@@ -1,22 +1,34 @@
+// @flow
 import React from "react";
 import { StyleSheet, Text, View, Alert } from "react-native";
 import AWS from "aws-sdk";
 
-AWS.config.region = "ap-northeast-1";
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: "hogeee",
-});
-const documentClient = new AWS.DynamoDB.DocumentClient();
-
 export default class Container extends React.Component {
-  componentDidMount() {
-    documentClient.scan({ TableName: "TwitterFilter_KVS" }, (err, data) => {
-      if (err) {
-        Alert.alert(JSON.stringify(err));
-        return;
-      }
-      this.setState({ data });
+  constructor(props) {
+    super(props);
+
+    // TODO: flow導入
+    // eslint-disable-next-line react/prop-types
+    const { IdentityPoolId } = props.config;
+
+    AWS.config.region = "ap-northeast-1";
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId,
     });
+    this.documentClient = new AWS.DynamoDB.DocumentClient();
+  }
+
+  componentDidMount() {
+    this.documentClient.scan(
+      { TableName: "TwitterFilter_KVS" },
+      (err, data) => {
+        if (err) {
+          Alert.alert(JSON.stringify(err));
+          return;
+        }
+        this.setState({ data });
+      }
+    );
   }
 
   render() {
