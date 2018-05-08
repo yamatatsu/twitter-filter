@@ -43,9 +43,7 @@ export default class Container extends React.Component {
   deal(favorite) {
     const { tweet, lastEvaluatedKey } = this.state;
     Promise.resolve()
-      .then(() =>
-        this.dynamodbClient.updateTeacherLabel(tweet.TweetId, favorite)
-      )
+      .then(() => this.dynamodbClient.updateTeacherLabel(tweet, favorite))
       .then(() => this.dynamodbClient.putLastEvaluatedKey(lastEvaluatedKey))
       .then(() => {
         this.fetch();
@@ -53,38 +51,41 @@ export default class Container extends React.Component {
   }
 
   render() {
-    const tweet = this.state && this.state.tweet;
+    const { tweet, lastEvaluatedKey } = this.state || {};
+    if (!tweet) {
+      return (
+        <View style={styles.container}>
+          <Text>fetching...</Text>
+        </View>
+      );
+    }
+    if (!lastEvaluatedKey) {
+      // これをラベル付けしてしまうと、次のtweetが取れなくなるので保留する
+      return (
+        <View style={styles.container}>
+          <Text>All tweets has labeled!!</Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
-        {!tweet ? (
-          <Text>fetching...</Text>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <ScrollView>
-              <Text
-                style={{
-                  top: 100,
-                  margin: 20,
-                  fontSize: 32,
-                  fontWeight: "700",
-                }}
-              >
-                {tweet.text}
-              </Text>
-            </ScrollView>
+        <ScrollView>
+          <Text
+            style={{
+              top: 100,
+              margin: 20,
+              fontSize: 28,
+              fontWeight: "700",
+            }}
+          >
+            {tweet.text}
+          </Text>
+        </ScrollView>
 
-            <View style={{ flexDirection: "row" }}>
-              <MyButton
-                label="興味ある"
-                onPress={() => this.deal(tweet, true)}
-              />
-              <MyButton
-                label="興味ない"
-                onPress={() => this.deal(tweet, false)}
-              />
-            </View>
-          </View>
-        )}
+        <View style={{ flexDirection: "row" }}>
+          <MyButton label="true" onPress={() => this.deal(true)} />
+          <MyButton label="false" onPress={() => this.deal(false)} />
+        </View>
       </View>
     );
   }

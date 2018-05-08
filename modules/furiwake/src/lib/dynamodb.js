@@ -1,4 +1,3 @@
-// import format from "pretty-format";
 import AWS from "aws-sdk";
 
 const LAST_EVALUATED_KEY = "App_LastEvaluatedKey_for_RawTweets";
@@ -16,7 +15,13 @@ export default function init(IdentityPoolId) {
       return documentClient.scan(params).promise();
     },
 
-    updateTeacherLabel: (tweetId, favorite) => {},
+    updateTeacherLabel: (tweet, favorite) => {
+      const params = {
+        TableName: "TwitterFilter_RawTweets",
+        Item: { ...tweet, label: favorite ? 1 : -1 },
+      };
+      return documentClient.put(params).promise();
+    },
 
     putLastEvaluatedKey: value => {
       const params = {
