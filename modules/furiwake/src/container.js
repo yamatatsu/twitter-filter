@@ -1,43 +1,90 @@
 // @flow
+// TODO: flow導入
+/* eslint-disable react/prop-types */
 import React from "react";
-import { StyleSheet, Text, View, Alert } from "react-native";
-import AWS from "aws-sdk";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableHighlight,
+  ScrollView,
+} from "react-native";
 
+import initDynamodbCient from "./lib/dynamodb";
+
+const FETCH_LIMIT = 1;
 export default class Container extends React.Component {
   constructor(props) {
     super(props);
 
-    // TODO: flow導入
-    // eslint-disable-next-line react/prop-types
     const { IdentityPoolId } = props.config;
 
-    AWS.config.region = "ap-northeast-1";
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId,
-    });
-    this.documentClient = new AWS.DynamoDB.DocumentClient();
+    this.dynamodbClient = initDynamodbCient(IdentityPoolId);
   }
 
   componentDidMount() {
-    this.documentClient.scan(
-      { TableName: "TwitterFilter_KVS" },
-      (err, data) => {
-        if (err) {
-          Alert.alert(JSON.stringify(err));
-          return;
-        }
-        this.setState({ data });
-      }
-    );
+    this.fetch();
+  }
+
+  fetch() {
+    Promise.resolve()
+      .then(() => this.dynamodbClient.getLastEvaluatedKey())
+      .then(lastEvaluatedKey =>
+        this.dynamodbClient.fetchRawTweets(FETCH_LIMIT, lastEvaluatedKey)
+      )
+      .then(data => {
+        this.setState({
+          tweet: data.Items[0],
+          lastEvaluatedKey: data.LastEvaluatedKey,
+        });
+      });
+  }
+
+  deal(favorite) {
+    const { tweet, lastEvaluatedKey } = this.state;
+    Promise.resolve()
+      .then(() =>
+        this.dynamodbClient.updateTeacherLabel(tweet.TweetId, favorite)
+      )
+      .then(() => this.dynamodbClient.putLastEvaluatedKey(lastEvaluatedKey))
+      .then(() => {
+        this.fetch();
+      });
   }
 
   render() {
+    const tweet = this.state && this.state.tweet;
     return (
       <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
-        <Text>{JSON.stringify(this.state && this.state.data)}</Text>
+        {!tweet ? (
+          <Text>fetching...</Text>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <ScrollView>
+              <Text
+                style={{
+                  top: 100,
+                  margin: 20,
+                  fontSize: 32,
+                  fontWeight: "700",
+                }}
+              >
+                {tweet.text}
+              </Text>
+            </ScrollView>
+
+            <View style={{ flexDirection: "row" }}>
+              <MyButton
+                label="興味ある"
+                onPress={() => this.deal(tweet, true)}
+              />
+              <MyButton
+                label="興味ない"
+                onPress={() => this.deal(tweet, false)}
+              />
+            </View>
+          </View>
+        )}
       </View>
     );
   }
@@ -51,3 +98,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+function MyButton(props) {
+  const buttonStyles = StyleSheet.create({
+    button: {
+      backgroundColor: "steelblue",
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      width: 160,
+      height: 100,
+      margin: 10,
+    },
+    text: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: "white",
+    },
+  });
+  return (
+    <TouchableHighlight style={buttonStyles.button} onPress={props.onPress}>
+      <Text style={buttonStyles.text}>{props.label}</Text>
+    </TouchableHighlight>
+  );
+}
