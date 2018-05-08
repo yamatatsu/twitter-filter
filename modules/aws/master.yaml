@@ -103,16 +103,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-      GlobalSecondaryIndexes:
-        - IndexName: main-index
-          KeySchema:
-            - AttributeName: TweetId
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: '1'
-            WriteCapacityUnits: '1'
 
   DDBKVS:
     Type: 'AWS::DynamoDB::Table'
