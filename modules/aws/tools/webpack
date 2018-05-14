@@ -2,5 +2,6 @@
 set -eux
 
 yarn webpack --mode development
-# kuromojiを使い始めるときまで封印
-# cp -rf node_modules/kuromoji/dict dist/lambda/dict
+
+# これ混ぜると cfn package がどちゃくそ重くなる。
+cp -rf node_modules/kuromoji/dict dist/lambda/dict
