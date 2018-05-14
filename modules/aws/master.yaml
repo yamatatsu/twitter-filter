@@ -90,11 +90,11 @@ Resources:
       MemorySize: 512
       Timeout: 10
 
-  LambdaTextToToken:
+  LambdaTextToWords:
     Type: AWS::Lambda::Function
     Properties:
       Code: ./dist/lambda
-      Handler: bundle.textToToken
+      Handler: bundle.textToWords
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs8.10
       MemorySize: 1024
@@ -152,7 +152,7 @@ Resources:
       BatchSize: 1000
       Enabled: True
       EventSourceArn: !GetAtt DDBTRaws.StreamArn
-      FunctionName: !GetAtt LambdaTextToToken.Arn
+      FunctionName: !GetAtt LambdaTextToWords.Arn
       StartingPosition: LATEST
 
   # ##############################

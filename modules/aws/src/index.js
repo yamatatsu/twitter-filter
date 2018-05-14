@@ -1,3 +1,3 @@
 exports.fetchTweets = require("./handlers/fetch-tweets");
-exports.textToToken = require("./handlers/text-to-token");
+exports.textToWords = require("./handlers/text-to-words");
 exports.createDict = require("./handlers/create-dict");
