@@ -3,11 +3,11 @@ const db = require("../lib/dynamodb");
 
 function textToToken(event, context) {
   getTokenizer()
-    .then(tokenizer => {
+    .then(tokenize => {
       const promises = event.Records.filter(isInsertEvent).map(record => {
         const tweetId = record.dynamodb.Keys.TweetId.S;
         const text = record.dynamodb.NewImage.text.S;
-        const tokens = tokenizer.tokenize(text);
+        const tokens = tokenize(text);
         return db.updateRawTweets(tweetId, "tokens", tokens);
       });
       return Promise.all(promises);
