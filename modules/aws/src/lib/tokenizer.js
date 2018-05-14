@@ -1,5 +1,5 @@
-import path from "path";
-import kuromoji from "kuromoji";
+const path = require("path");
+const kuromoji = require("kuromoji");
 
 const builder = kuromoji.builder({ dicPath: path.resolve("dict") });
 

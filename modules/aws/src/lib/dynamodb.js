@@ -26,6 +26,31 @@ function batchPutToRawTweets(tweets) {
     .catch(handleErr("dynamodb batchPutToRawTweets. %o", { tweets }));
 }
 
+function updateRawTweets(TweetId, attrName, value) {
+  const params = {
+    TableName: "TwitterFilter_RawTweets",
+    Key: { TweetId },
+    UpdateExpression: "set #a = :x",
+    ExpressionAttributeNames: { "#a": attrName },
+    ExpressionAttributeValues: { ":x": value },
+  };
+  return documentClient
+    .update(params)
+    .promise()
+    .catch(
+      handleErr("dynamodb updateRawTweets. %o", { TweetId, attrName, value })
+    );
+}
+
+function fetchRawTweets(limit, lastEvaluatedKey) {
+  const params = {
+    TableName: "TwitterFilter_RawTweets",
+    Limit: limit,
+    ...(lastEvaluatedKey ? { ExclusiveStartKey: lastEvaluatedKey } : {}),
+  };
+  return documentClient.scan(params).promise();
+}
+
 function putToKVS(key, value) {
   const params = {
     TableName: "TwitterFilter_KVS",
@@ -49,7 +74,13 @@ function getValueFromKVS(key) {
     .catch(handleErr("dynamodb getValueFromKVS. %o", { key }));
 }
 
-module.exports = { batchPutToRawTweets, putToKVS, getValueFromKVS };
+module.exports = {
+  batchPutToRawTweets,
+  updateRawTweets,
+  fetchRawTweets,
+  putToKVS,
+  getValueFromKVS,
+};
 
 // /////////
 // private

@@ -7,15 +7,14 @@
     "deploy": "npm-run-all deploy:webpack deploy:aws",
     "deploy:webpack": "./tools/webpack",
     "deploy:aws": "./tools/aws",
-    "stack:delete":
-      "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
-    "stack:describe":
-      "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
+    "stack:delete": "aws cloudformation delete-stack --stack-name $CFN_STACK_NAME",
+    "stack:describe": "aws cloudformation describe-stack-events --stack-name $CFN_STACK_NAME"
   },
   "dependencies": {
     "aws-sdk": "^2.230.1",
     "kuromoji": "^0.1.2",
     "lodash": "^4.17.10",
+    "svm": "^0.1.1",
     "twitter": "^1.7.1"
   },
   "devDependencies": {

@@ -17,6 +17,8 @@ Parameters:
   TwitterAccessTokenSecret:
     Type: String
     NoEcho: true
+  BucketName:
+    Type: String
 
 
 Resources:
@@ -37,6 +39,7 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
         - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 
   AppRole:
     Type: AWS::IAM::Role
@@ -87,6 +90,29 @@ Resources:
       MemorySize: 512
       Timeout: 10
 
+  LambdaTextToToken:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: ./dist/lambda
+      Handler: bundle.textToToken
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: nodejs8.10
+      MemorySize: 1024
+      Timeout: 30
+
+  LambdaCreateDict:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: ./dist/lambda
+      Handler: bundle.createDict
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: nodejs8.10
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+      MemorySize: 512
+      Timeout: 10
+
   # ##############################
   # dynamo
 
@@ -103,6 +129,8 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
   DDBKVS:
     Type: 'AWS::DynamoDB::Table'
@@ -117,6 +145,15 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+
+  DataTableStream:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1000
+      Enabled: True
+      EventSourceArn: !GetAtt DDBTRaws.StreamArn
+      FunctionName: !GetAtt LambdaTextToToken.Arn
+      StartingPosition: LATEST
 
   # ##############################
   # cognito
