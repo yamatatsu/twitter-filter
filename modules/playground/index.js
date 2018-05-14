@@ -1,7 +1,7 @@
 function getTokenizer() {
-  const kuromoji = require('kuromoji');
+  const kuromoji = require("kuromoji");
   const builder = kuromoji.builder({
-    dicPath: path.resolve('node_modules', 'kuromoji', 'dict'),
+    dicPath: path.resolve("node_modules", "kuromoji", "dict"),
   });
   return new Promise((resolve, reject) => {
     builder.build((err, tokenizer) => {
@@ -14,12 +14,12 @@ function getTokenizer() {
   });
 }
 
-const kuromoji = require('kuromoji');
+const kuromoji = require("kuromoji");
 
 kuromoji
-  .builder({ dicPath: path.resolve('node_modules', 'kuromoji', 'dict') })
+  .builder({ dicPath: path.resolve("node_modules", "kuromoji", "dict") })
   .build((err, tokenizer) =>
-    console.log(tokenizer.tokenize('頑張っていこうぜ')),
+    console.log(tokenizer.tokenize("頑張っていこうぜ"))
   );
 
 tokens
