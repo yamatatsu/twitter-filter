@@ -100,11 +100,24 @@ Resources:
       MemorySize: 1024
       Timeout: 30
 
-  LambdaCreateDict:
+  LambdaWordsToDict:
     Type: AWS::Lambda::Function
     Properties:
       Code: ./dist/lambda
-      Handler: bundle.createDict
+      Handler: bundle.wordsToDict
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: nodejs8.10
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+      MemorySize: 512
+      Timeout: 10
+
+  LambdaCreateModel:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: ./dist/lambda
+      Handler: bundle.createModel
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs8.10
       Environment:
@@ -123,12 +136,26 @@ Resources:
       AttributeDefinitions:
         - AttributeName: TweetId
           AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
       KeySchema:
         - AttributeName: TweetId
           KeyType: HASH
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+      GlobalSecondaryIndexes:
+        - IndexName: SortByCreatedAt
+          KeySchema:
+            - AttributeName: TweetId
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 

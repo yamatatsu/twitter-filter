@@ -45,6 +45,7 @@ function updateRawTweets(TweetId, attrName, value) {
 function fetchRawTweets(limit, lastEvaluatedKey) {
   const params = {
     TableName: "TwitterFilter_RawTweets",
+    IndexName: "SortByCreatedAt",
     Limit: limit,
     ...(lastEvaluatedKey ? { ExclusiveStartKey: lastEvaluatedKey } : {}),
   };
