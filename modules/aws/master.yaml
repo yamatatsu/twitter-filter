@@ -87,18 +87,28 @@ Resources:
           TWITTER_CONSUMER_SECRET: !Ref TwitterConsumerSecret
           TWITTER_ACCESS_TOKEN: !Ref TwitterAccessToken
           TWITTER_ACCESS_TOKEN_SECRET: !Ref TwitterAccessTokenSecret
-      MemorySize: 512
-      Timeout: 10
-
-  LambdaTextToWords:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code: ./dist/lambda
-      Handler: bundle.textToWords
-      Role: !GetAtt LambdaRole.Arn
-      Runtime: nodejs8.10
       MemorySize: 1024
       Timeout: 30
+
+  # LambdaTextToWords:
+  #   Type: AWS::Lambda::Function
+  #   Properties:
+  #     Code: ./dist/lambda
+  #     Handler: bundle.textToWords
+  #     Role: !GetAtt LambdaRole.Arn
+  #     Runtime: nodejs8.10
+  #     MemorySize: 1024
+  #     Timeout: 30
+
+  # LambdaTextToWordsAll:
+  #   Type: AWS::Lambda::Function
+  #   Properties:
+  #     Code: ./dist/lambda
+  #     Handler: bundle.textToWordsAll
+  #     Role: !GetAtt LambdaRole.Arn
+  #     Runtime: nodejs8.10
+  #     MemorySize: 1024
+  #     Timeout: 300
 
   LambdaWordsToDict:
     Type: AWS::Lambda::Function
@@ -111,7 +121,7 @@ Resources:
         Variables:
           BUCKET_NAME: !Ref BucketName
       MemorySize: 512
-      Timeout: 10
+      Timeout: 180
 
   LambdaCreateModel:
     Type: AWS::Lambda::Function
@@ -124,7 +134,7 @@ Resources:
         Variables:
           BUCKET_NAME: !Ref BucketName
       MemorySize: 512
-      Timeout: 10
+      Timeout: 300
 
   # ##############################
   # dynamo
@@ -136,8 +146,8 @@ Resources:
       AttributeDefinitions:
         - AttributeName: TweetId
           AttributeType: S
-        - AttributeName: createdAt
-          AttributeType: S
+        - AttributeName: label
+          AttributeType: N
       KeySchema:
         - AttributeName: TweetId
           KeyType: HASH
@@ -145,11 +155,11 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
       GlobalSecondaryIndexes:
-        - IndexName: SortByCreatedAt
+        - IndexName: ByLabel
           KeySchema:
             - AttributeName: TweetId
               KeyType: HASH
-            - AttributeName: createdAt
+            - AttributeName: label
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
@@ -173,14 +183,14 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
-  DataTableStream:
-    Type: AWS::Lambda::EventSourceMapping
-    Properties:
-      BatchSize: 1000
-      Enabled: True
-      EventSourceArn: !GetAtt DDBTRaws.StreamArn
-      FunctionName: !GetAtt LambdaTextToWords.Arn
-      StartingPosition: LATEST
+  # DataTableStream:
+  #   Type: AWS::Lambda::EventSourceMapping
+  #   Properties:
+  #     BatchSize: 1000
+  #     Enabled: True
+  #     EventSourceArn: !GetAtt DDBTRaws.StreamArn
+  #     FunctionName: !GetAtt LambdaTextToWords.Arn
+  #     StartingPosition: LATEST
 
   # ##############################
   # cognito

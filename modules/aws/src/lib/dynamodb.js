@@ -42,12 +42,11 @@ function updateRawTweets(TweetId, attrName, value) {
     );
 }
 
-function fetchRawTweets(limit, lastEvaluatedKey) {
+function fetchRawTweets(limit, options = {}) {
   const params = {
     TableName: "TwitterFilter_RawTweets",
-    IndexName: "SortByCreatedAt",
     Limit: limit,
-    ...(lastEvaluatedKey ? { ExclusiveStartKey: lastEvaluatedKey } : {}),
+    ...options,
   };
   return documentClient.scan(params).promise();
 }

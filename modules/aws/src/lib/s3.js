@@ -21,7 +21,7 @@ function get(Key) {
     .catch(handleErr("s3 getModel"));
 }
 const putJson = (key, jsonObj) => put(key, JSON.stringify(jsonObj));
-const getJson = key => JSON.parse(get(key));
+const getJson = key => get(key).then(data => JSON.parse(data.Body.toString()));
 
 module.exports = {
   putDict: jsonObj => putJson(DICT_KEY, jsonObj),
