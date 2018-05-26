@@ -9,9 +9,8 @@ export default function init(IdentityPoolId) {
     fetchRawTweets: (limit, lastEvaluatedKey) => {
       const params = {
         TableName: "TwitterFilter_RawTweets",
-        IndexName: "SortByCreatedAt",
         Limit: limit,
-        ...(lastEvaluatedKey ? { ExclusiveStartKey: lastEvaluatedKey } : {}),
+        ExclusiveStartKey: lastEvaluatedKey || undefined,
       };
       return documentClient.scan(params).promise();
     },

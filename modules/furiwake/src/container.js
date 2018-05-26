@@ -27,11 +27,20 @@ export default class Container extends React.Component {
   }
 
   fetch() {
+    const recurse = lastEvaluatedKey =>
+      this.dynamodbClient
+        .fetchRawTweets(FETCH_LIMIT, lastEvaluatedKey)
+        .then(data => {
+          if (data.Items[0].label) {
+            return this.dynamodbClient
+              .putLastEvaluatedKey(lastEvaluatedKey)
+              .then(() => recurse(data.LastEvaluatedKey));
+          }
+          return data;
+        });
     Promise.resolve()
       .then(() => this.dynamodbClient.getLastEvaluatedKey())
-      .then(lastEvaluatedKey =>
-        this.dynamodbClient.fetchRawTweets(FETCH_LIMIT, lastEvaluatedKey)
-      )
+      .then(lastEvaluatedKey => recurse(lastEvaluatedKey))
       .then(data => {
         this.setState({
           tweet: data.Items[0],
