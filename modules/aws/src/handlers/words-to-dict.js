@@ -10,13 +10,10 @@ const uniqConcat = (arr1, arr2) =>
 
 const recurse = (lastEvaluatedKey, dict = []) =>
   db
-    .fetchRawTweets(200, {
-      ExclusiveStartKey: lastEvaluatedKey || undefined,
-      IndexName: "ByLabel",
-    })
+    .fetchRawTweets(200, { ExclusiveStartKey: lastEvaluatedKey || undefined })
     .then(data => {
       const newDict = data.Items.reduce(
-        (acc, item) => uniqConcat(acc, item.words),
+        (acc, item) => (item.words ? uniqConcat(acc, item.words) : acc),
         dict
       );
       if (data.LastEvaluatedKey) {
