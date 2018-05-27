@@ -1,0 +1,10 @@
+{
+  "name": "result",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "kuromoji": "^0.1.2",
+    "svm": "^0.1.1"
+  }
+}
