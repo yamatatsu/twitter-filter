@@ -4,7 +4,7 @@ const db = require("../lib/dynamodb");
 const s3 = require("../lib/s3");
 
 const wordsToVector = (words, dict) =>
-  dict.map(w => (words.indexOf(w) === -1 ? 0 : 1));
+  dict.map(dw => words.reduce((c, w) => (dw === w ? c + 1 : c), 0));
 
 const concatVecAndLabel = (acc, vec, label) => {
   const [accVector, accLabels] = acc;
@@ -31,13 +31,23 @@ const recurse = (dict, lastEvaluatedKey, vectors = [], labels = []) =>
     });
 
 function createModel(event, context) {
-  s3
-    .getDict()
-    .then(dict => recurse(dict))
-    .then(([vectors, labels]) => {
+  Promise.all([
+    db.fetchRawTweets(100, {
+      IndexName: "ByLabel",
+    }),
+    s3.getDict(),
+  ])
+    .then(([data, dict]) => {
+      const [vectors, labels] = data.Items.reduce(
+        (acc, { words, label }) =>
+          words && label
+            ? concatVecAndLabel(acc, wordsToVector(words, dict), label)
+            : acc,
+        [[], []]
+      );
       const svm = new SVM();
       svm.train(vectors, labels);
-      return s3.putModel(svm.toJson());
+      return s3.putModel(svm.toJSON());
     })
     .then(results => {
       console.info(results);
