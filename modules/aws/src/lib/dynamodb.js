@@ -15,6 +15,7 @@ function batchPutToRawTweets(tweets) {
             userId: t.user.id,
             userName: t.user.name,
             userScreenName: t.user.screen_name,
+            words: t.words,
           },
         },
       })),
