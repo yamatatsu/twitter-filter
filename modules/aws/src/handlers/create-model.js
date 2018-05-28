@@ -12,7 +12,7 @@ const concatVecAndLabel = (acc, vec, label) => {
 };
 const recurse = (dict, lastEvaluatedKey, vectors = [], labels = []) =>
   db
-    .fetchRawTweets(200, {
+    .fetchRawTweets(500, {
       ExclusiveStartKey: lastEvaluatedKey || undefined,
       IndexName: "ByLabel",
     })

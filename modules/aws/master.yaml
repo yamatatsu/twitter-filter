@@ -90,26 +90,6 @@ Resources:
       MemorySize: 1024
       Timeout: 30
 
-  # LambdaTextToWords:
-  #   Type: AWS::Lambda::Function
-  #   Properties:
-  #     Code: ./dist/lambda
-  #     Handler: bundle.textToWords
-  #     Role: !GetAtt LambdaRole.Arn
-  #     Runtime: nodejs8.10
-  #     MemorySize: 1024
-  #     Timeout: 30
-
-  # LambdaTextToWordsAll:
-  #   Type: AWS::Lambda::Function
-  #   Properties:
-  #     Code: ./dist/lambda
-  #     Handler: bundle.textToWordsAll
-  #     Role: !GetAtt LambdaRole.Arn
-  #     Runtime: nodejs8.10
-  #     MemorySize: 1024
-  #     Timeout: 300
-
   LambdaWordsToDict:
     Type: AWS::Lambda::Function
     Properties:
@@ -182,15 +162,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-
-  # DataTableStream:
-  #   Type: AWS::Lambda::EventSourceMapping
-  #   Properties:
-  #     BatchSize: 1000
-  #     Enabled: True
-  #     EventSourceArn: !GetAtt DDBTRaws.StreamArn
-  #     FunctionName: !GetAtt LambdaTextToWords.Arn
-  #     StartingPosition: LATEST
 
   # ##############################
   # cognito
